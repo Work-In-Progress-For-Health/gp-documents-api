@@ -1,0 +1,11 @@
+uk/nhs/wales/gppractice/model/FhirBundle.class
+uk/nhs/wales/gppractice/service/FhirValidationService.class
+uk/nhs/wales/gppractice/service/GpPracticeService.class
+uk/nhs/wales/gppractice/GpPracticeDocumentsApplication.class
+uk/nhs/wales/gppractice/model/FhirOperationOutcome.class
+uk/nhs/wales/gppractice/config/FhirConfig.class
+uk/nhs/wales/gppractice/repository/GpPracticeRepository.class
+uk/nhs/wales/gppractice/model/FhirResource.class
+uk/nhs/wales/gppractice/model/FhirBundle$FhirEntry.class
+uk/nhs/wales/gppractice/controller/DocumentSubmissionController.class
+uk/nhs/wales/gppractice/entity/GpPractice.class

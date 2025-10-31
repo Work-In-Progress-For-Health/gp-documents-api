@@ -1,0 +1,10 @@
+/home/dhcw/temp/documents-api/gp/src/main/java/uk/nhs/wales/gppractice/GpPracticeDocumentsApplication.java
+/home/dhcw/temp/documents-api/gp/src/main/java/uk/nhs/wales/gppractice/config/FhirConfig.java
+/home/dhcw/temp/documents-api/gp/src/main/java/uk/nhs/wales/gppractice/controller/DocumentSubmissionController.java
+/home/dhcw/temp/documents-api/gp/src/main/java/uk/nhs/wales/gppractice/entity/GpPractice.java
+/home/dhcw/temp/documents-api/gp/src/main/java/uk/nhs/wales/gppractice/model/FhirBundle.java
+/home/dhcw/temp/documents-api/gp/src/main/java/uk/nhs/wales/gppractice/model/FhirOperationOutcome.java
+/home/dhcw/temp/documents-api/gp/src/main/java/uk/nhs/wales/gppractice/model/FhirResource.java
+/home/dhcw/temp/documents-api/gp/src/main/java/uk/nhs/wales/gppractice/repository/GpPracticeRepository.java
+/home/dhcw/temp/documents-api/gp/src/main/java/uk/nhs/wales/gppractice/service/FhirValidationService.java
+/home/dhcw/temp/documents-api/gp/src/main/java/uk/nhs/wales/gppractice/service/GpPracticeService.java
