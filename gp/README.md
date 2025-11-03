@@ -118,11 +118,12 @@ This is a Java spring boot application which implements the basic functionality 
         "type": {
           "coding": [
             {
-              "system": "http://loinc.org",
-              "code": "34133-9",
-              "display": "Summarization of episode note"
+              "system": "http://snomed.info/sct",
+              "code": "373942005",
+              "display": "Discharge summary"
             }
-          ]
+          ],
+          "text": "Discharge summary"
         },
         "subject": {
           "reference": "urn:uuid:9c2d9a2b-3b27-4e4f-9f10-c1a91e2b3a9f"
