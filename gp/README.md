@@ -70,7 +70,7 @@ This is a Java spring boot application which implements the basic functionality 
       "resource": {
         "resourceType": "Organization",
         "id": "a203afcd-3a7d-4b27-bc0f-3c86efb6e0d2",
-        "name": "HealthTech GP Practice"
+        "name": "GP Practice"
       },
       "request": {
         "method": "POST",
