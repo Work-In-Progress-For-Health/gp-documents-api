@@ -10,8 +10,7 @@ import uk.nhs.wales.gppractice.model.FhirOperationOutcome;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.ValidationResult;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.*;
 
 import java.util.List;
 
@@ -56,7 +55,7 @@ public class DocumentSubmissionController {
             return badRequest("Invalid or missing FHIR Bundle structure.");
         }
 
-        // Validate the bundle
+        // Validate FHIR structure
         ValidationResult validationResult = fhirValidator.validateWithResult(bundle);
         if (!validationResult.isSuccessful()) {
             OperationOutcome outcome = (OperationOutcome) validationResult.toOperationOutcome();
@@ -76,10 +75,53 @@ public class DocumentSubmissionController {
             }
         }
 
+        // --- New Section: Validate Patient Identifier ---
+        try {
+            validatePatientIdentifier(bundle);
+        } catch (IllegalArgumentException ex) {
+            return badRequest(ex.getMessage());
+        }
+
+        // If we reach here, validation succeeded
         FhirOperationOutcome outcome = FhirOperationOutcome.success(
                 "Bundle successfully processed and document accepted for GP practice " + gpPracticeId
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(outcome);
+    }
+
+    // -----------------------------------------------------
+    // NHS Number validation logic
+    // -----------------------------------------------------
+    private void validatePatientIdentifier(Bundle bundle) {
+        // Find the Patient resource
+        Patient patient = bundle.getEntry().stream()
+                .filter(e -> e.getResource() instanceof Patient)
+                .map(e -> (Patient) e.getResource())
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Missing Patient resource in bundle."));
+
+        // Check identifiers
+        for (Identifier identifier : patient.getIdentifier()) {
+            String system = identifier.getSystem();
+            if (!"https://fhir.nhs.uk/Id/nhs-number".equals(system)) {
+                throw new IllegalArgumentException("Patient identifier must use system https://fhir.nhs.uk/Id/nhs-number");
+            }
+
+            // Check extensions for verification status
+            for (Extension ext : identifier.getExtension()) {
+                if ("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus"
+                        .equals(ext.getUrl())) {
+
+                    CodeableConcept valueCC = (CodeableConcept) ext.getValue();
+                    for (Coding coding : valueCC.getCoding()) {
+                        String code = coding.getCode();
+                        if (!"01".equals(code) && !"number-present-and-verified".equals(code)) {
+                            throw new IllegalArgumentException("Non-verified NHS Number. Code must be '01' or 'number-present-and-verified'");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private ResponseEntity<FhirOperationOutcome> badRequest(String message) {
