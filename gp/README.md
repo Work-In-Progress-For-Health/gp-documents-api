@@ -13,9 +13,7 @@ This is a Java spring boot application which implements the basic functionality 
         "name": [
           {
             "family": "Smith",
-            "given": [
-              "John"
-            ]
+            "given": ["John"]
           }
         ],
         "gender": "male",
@@ -39,6 +37,15 @@ This is a Java spring boot application which implements the basic functionality 
               }
             ]
           }
+        ],
+        "address": [
+          {
+            "use": "home",
+            "line": ["10 High Street"],
+            "city": "Leeds",
+            "postalCode": "LS1 4AB",
+            "country": "GB"
+          }
         ]
       },
       "request": {
@@ -53,10 +60,9 @@ This is a Java spring boot application which implements the basic functionality 
         "id": "edb28f5f-f312-4b91-9a89-64b20d9e1c77",
         "name": [
           {
+            "prefix": ["Dr"],
             "family": "Jones",
-            "given": [
-              "Sarah"
-            ]
+            "given": ["Sarah"]
           }
         ]
       },
@@ -70,7 +76,7 @@ This is a Java spring boot application which implements the basic functionality 
       "resource": {
         "resourceType": "Organization",
         "id": "a203afcd-3a7d-4b27-bc0f-3c86efb6e0d2",
-        "name": "GP Practice"
+        "name": "HealthTech GP Practice"
       },
       "request": {
         "method": "POST",
@@ -85,11 +91,61 @@ This is a Java spring boot application which implements the basic functionality 
         "status": "finished",
         "class": {
           "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-          "code": "AMB"
+          "code": "IMP",
+          "display": "inpatient encounter"
         },
         "subject": {
           "reference": "urn:uuid:9c2d9a2b-3b27-4e4f-9f10-c1a91e2b3a9f"
-        }
+        },
+        "serviceProvider": {
+          "reference": "urn:uuid:a203afcd-3a7d-4b27-bc0f-3c86efb6e0d2",
+          "display": "GP Practice"
+        },
+        "serviceType": {
+          "coding": [
+            {
+              "system": "https://fhir.hl7.org.uk/CodeSystem/UKCore-ServiceType",
+              "code": "300",
+              "display": "General Internal Medicine"
+            }
+          ]
+        },
+        "reasonCode": [
+          {
+            "text": "Clinical circumstance leading to admission..."
+          }
+        ],
+        "period": {
+          "start": "2025-10-15T10:33:00+00:00",
+          "end": "2025-10-16T00:00:00+00:00"
+        },
+        "hospitalization": {
+          "admitSource": {
+            "coding": [
+              {
+                "system": "https://fhir.hl7.org.uk/CodeSystem/UKCore-AdmissionMethod",
+                "code": "11",
+                "display": "Emergency admission"
+              }
+            ]
+          },
+          "dischargeDisposition": {
+            "text": "Unknown"
+          },
+          "destination": {
+            "display": "Unknown"
+          }
+        },
+        "location": [
+          {
+            "location": {
+              "display": "Ward 00001"
+            },
+            "period": {
+              "end": "2025-10-16T00:00:00+00:00"
+            }
+          }
+        ]
       },
       "request": {
         "method": "POST",
