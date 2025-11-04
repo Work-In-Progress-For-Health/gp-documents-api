@@ -1,5 +1,5 @@
-# Use Debian as the base image with OpenJDK 17 installed
-FROM openjdk:17-jdk-bullseye
+# Use Debian as the base image with OpenJDK 18 installed
+FROM openjdk:18-ea-11-jdk-bullseye
 
 # Set the working directory inside the container
 WORKDIR /app
