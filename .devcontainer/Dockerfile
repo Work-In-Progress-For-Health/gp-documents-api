@@ -29,9 +29,9 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
     && echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> /home/vscode/.bashrc \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# Install Entity Framework Core tools globally
-RUN dotnet tool install --global dotnet-ef \
-    && dotnet tool install --global dotnet-aspnet-codegenerator
+# Install Entity Framework Core tools globally (retry on transient failures)
+RUN dotnet tool install --global dotnet-ef 2>&1 || echo "Warning: dotnet-ef install failed, continuing..." && \
+    dotnet tool install --global dotnet-aspnet-codegenerator 2>&1 || echo "Warning: dotnet-aspnet-codegenerator install failed, continuing..."
 
 # Add dotnet tools to PATH
 ENV PATH="${PATH}:/home/vscode/.dotnet/tools"

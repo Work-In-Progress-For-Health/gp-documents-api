@@ -1,0 +1,184 @@
+### GP Practice Documents API - REST Client Tests
+### Use this file with the REST Client extension in VS Code
+
+@baseUrl = http://localhost:8080
+@gpPracticeId = GP12345
+
+### Health Check
+GET {{baseUrl}}/health
+
+###
+
+### Root Endpoint
+GET {{baseUrl}}/
+
+###
+
+### API Documentation (opens in browser)
+# GET {{baseUrl}}/docs
+
+###
+
+### Submit Document Bundle - Valid Example
+# Note: Replace with actual FHIR Bundle
+POST {{baseUrl}}/api/v1/gp-practice/{{gpPracticeId}}/documents
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-1",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/nhs-number",
+            "value": "9876543210",
+            "extension": [
+              {
+                "url": "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "https://fhir.hl7.org.uk/CodeSystem/UKCore-NHSNumberVerificationStatus",
+                      "code": "01",
+                      "display": "Number present and verified"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "name": [
+          {
+            "family": "Smith",
+            "given": ["John"]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "DocumentReference",
+        "id": "doc-ref-1",
+        "status": "current",
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "373942005",
+              "display": "Discharge summary"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-1"
+        },
+        "content": [
+          {
+            "attachment": {
+              "contentType": "application/pdf",
+              "url": "Binary/binary-1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Binary",
+        "id": "binary-1",
+        "contentType": "application/pdf",
+        "data": "JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9GaWx0ZXIvRmxhdGVEZWNvZGUvTGVuZ3RoIDQ5Pj5zdHJlYW0KeJwr5HIK4TJQMLU01TOyUDA2MFAwtTTVs7RQMDEzMDNTMDW2MDQwsrAwNORSAACRfAkoZW5kc3RyZWFtCmVuZG9iagoxIDAgb2JqCjw8L1RhYnMvUy9Hcm91cDw8L1MvVHJhbnNwYXJlbmN5L1R5cGUvR3JvdXAvQ1MvRGV2aWNlUkdCPj4vQ29udGVudHMgMyAwIFIvVHlwZS9QYWdlL1Jlc291cmNlczw8L0NvbG9yU3BhY2U8PC9DUy9EZXZpY2VSR0I+Pi9Gb250PDwvRjEgMiAwIFI+Pj4+L1BhcmVudCA0IDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0+PgplbmRvYmoKMiAwIG9iago8PC9TdWJ0eXBlL1R5cGUxL1R5cGUvRm9udC9CYXNlRm9udC9IZWx2ZXRpY2E+PgplbmRvYmoKNCAwIG9iago8PC9LaWRzWzEgMCBSXS9UeXBlL1BhZ2VzL0NvdW50IDEvSVRYVCgyLjEuNyk+PgplbmRvYmoKNSAwIG9iago8PC9QYWdlcyA0IDAgUi9UeXBlL0NhdGFsb2c+PgplbmRvYmoKNiAwIG9iago8PC9Qcm9kdWNlcihpVGV4dFxyIDIuMS43IGJ5IDFUM1hUKS9Nb2REYXRlKEQ6MjAyMzAxMDEwMDAwMDBaKT4+CmVuZG9iagp4cmVmCjAgNwowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAyMDkgMDAwMDAgbiAKMDAwMDAwMDQwNyAwMDAwMCBuIAowMDAwMDAwMDE1IDAwMDAwIG4gCjAwMDAwMDA0NjggMDAwMDAgbiAKMDAwMDAwMDUyOCAwMDAwMCBuIAowMDAwMDAwNTczIDAwMDAwIG4gCnRyYWlsZXIKPDwvSW5mbyA2IDAgUi9JRCBbPDRGNUY3MjBFQTQ2QkQ3MTVBRTQyMzE4QjdCNjk0OEE0PjwwMEEzNzY5MzJBMTJBNDZFOTM0QjI3NkM3NTBGRkFBQz5dL1Jvb3QgNSAwIFIvU2l6ZSA3Pj4Kc3RhcnR4cmVmCjY2NwolJUVPRgo="
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "encounter-1",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "IMP",
+          "display": "inpatient encounter"
+        },
+        "subject": {
+          "reference": "Patient/patient-1"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "practitioner-1",
+        "name": [
+          {
+            "family": "Jones",
+            "given": ["Sarah"],
+            "prefix": ["Dr"]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "org-1",
+        "name": "Example Hospital",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+            "value": "RX8"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+###
+
+### Submit Document Bundle - Invalid GP Practice ID
+POST {{baseUrl}}/api/v1/gp-practice/INVALID123/documents
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": []
+}
+
+###
+
+### Submit Document Bundle - Missing Binary
+POST {{baseUrl}}/api/v1/gp-practice/{{gpPracticeId}}/documents
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-1"
+      }
+    }
+  ]
+}
+
+###
+
+### Submit Document Bundle - Invalid JSON
+POST {{baseUrl}}/api/v1/gp-practice/{{gpPracticeId}}/documents
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Bundle",
+  "this is not valid json"
+}
+
+###

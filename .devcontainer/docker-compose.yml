@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ../:/workspace:cached
+      - ../:/workspace
     command: sleep infinity
     network_mode: service:sqlserver
     environment:
