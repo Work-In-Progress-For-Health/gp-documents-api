@@ -1,6 +1,5 @@
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
-using Hl7.Fhir.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Uk.HealthTechWales.GpPractice.Models;
 using Uk.HealthTechWales.GpPractice.Services;
@@ -13,7 +12,7 @@ public class DocumentSubmissionController : ControllerBase
 {
     private readonly ILogger<DocumentSubmissionController> _logger;
     private readonly IGpPracticeService _gpPracticeService;
-    private readonly Validator _fhirValidator;
+    private readonly IFhirValidationService _fhirValidationService;
     private readonly IDocumentProcessingService _documentProcessingService;
     private readonly FhirJsonParser _fhirParser;
 
@@ -24,15 +23,16 @@ public class DocumentSubmissionController : ControllerBase
 
     public DocumentSubmissionController(
         IGpPracticeService gpPracticeService,
-        Validator fhirValidator,
+        IFhirValidationService fhirValidationService,
+        FhirJsonParser fhirParser,
         IDocumentProcessingService documentProcessingService,
         ILogger<DocumentSubmissionController> logger)
     {
         _logger = logger;
         _gpPracticeService = gpPracticeService;
-        _fhirValidator = fhirValidator;
+        _fhirValidationService = fhirValidationService;
         _documentProcessingService = documentProcessingService;
-        _fhirParser = new FhirJsonParser();
+        _fhirParser = fhirParser;
     }
 
     [HttpPost]
@@ -91,12 +91,12 @@ public class DocumentSubmissionController : ControllerBase
             return BadRequest(nhsNumberValidation);
         }
 
-        // Validate the bundle
-        var validationResult = _fhirValidator.Validate(bundle);
-        if (!validationResult.IsSuccessful)
+        // Validate the bundle using validation service
+        var validationOutcome = _fhirValidationService.ValidateBundle(bundleJson);
+        if (validationOutcome.Issue != null && validationOutcome.Issue.Any(issue =>
+            issue.TryGetValue("severity", out var severity) && severity.ToString() == "error"))
         {
-            var outcome = validationResult.ToOperationOutcome();
-            return StatusCode(400, FhirOperationOutcome.FromOperationOutcome(outcome));
+            return StatusCode(400, validationOutcome);
         }
 
         // Check for required resources

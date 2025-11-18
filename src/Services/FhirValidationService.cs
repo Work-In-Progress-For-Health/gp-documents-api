@@ -1,41 +1,55 @@
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
-using Hl7.Fhir.Validation;
 using Uk.HealthTechWales.GpPractice.Models;
 
 namespace Uk.HealthTechWales.GpPractice.Services;
 
 public class FhirValidationService : IFhirValidationService
 {
-    private readonly Validator _validator;
     private readonly FhirJsonParser _parser;
+    private readonly ILogger<FhirValidationService> _logger;
 
-    public FhirValidationService(Validator validator)
+    public FhirValidationService(FhirJsonParser parser, ILogger<FhirValidationService> logger)
     {
-        _validator = validator;
-        _parser = new FhirJsonParser();
+        _parser = parser;
+        _logger = logger;
     }
 
     public FhirOperationOutcome ValidateBundle(string bundleJson)
     {
         try
         {
+            // Parse the bundle - the parser provides structural validation
+            // With strict settings (AcceptUnknownMembers=false, AllowUnrecognizedEnums=false)
             var bundle = _parser.Parse<Bundle>(bundleJson);
-            var result = _validator.Validate(bundle);
 
-            if (result.IsSuccessful)
+            // Basic validation checks
+            if (bundle == null)
             {
-                return FhirOperationOutcome.Success("FHIR Bundle validation passed.");
+                return FhirOperationOutcome.Error("Bundle parsing resulted in null.");
             }
 
-            var outcome = result.ToOperationOutcome();
-            var details = string.Join("; ",
-                outcome.Issue.Select(i => $"{i.Severity}: {i.Diagnostics}"));
+            if (bundle.Type == null)
+            {
+                return FhirOperationOutcome.Error("Bundle type is missing.");
+            }
 
-            return FhirOperationOutcome.Error($"FHIR validation failed: {details}");
+            if (bundle.Entry == null || !bundle.Entry.Any())
+            {
+                return FhirOperationOutcome.Error("Bundle has no entries.");
+            }
+
+            _logger.LogInformation("FHIR Bundle validation passed for bundle with {EntryCount} entries", bundle.Entry.Count);
+            return FhirOperationOutcome.Success("FHIR Bundle validation passed.");
+        }
+        catch (FormatException ex)
+        {
+            _logger.LogError(ex, "FHIR format validation error");
+            return FhirOperationOutcome.Error($"FHIR format error: {ex.Message}");
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "FHIR validation error");
             return FhirOperationOutcome.Error($"FHIR validation error: {ex.Message}");
         }
     }

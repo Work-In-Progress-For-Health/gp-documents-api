@@ -40,7 +40,7 @@ builder.Services.AddScoped<IClamAVService, ClamAVService>();
 builder.Services.AddScoped<IGpPracticeService, GpPracticeService>();
 builder.Services.AddScoped<IDocumentProcessingService, DocumentProcessingService>();
 builder.Services.AddScoped<IFhirValidationService, FhirValidationService>();
-builder.Services.AddScoped<IRabbitMQService, RabbitMQService>();
+builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
 // Configure Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
