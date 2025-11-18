@@ -69,16 +69,100 @@ The system boundary is the GP Practice Document Submission API. It receives FHIR
 
 - External senders: Hospital EHRs, middleware
 - API Gateway: TLS termination, authentication, rate-limiting
-- GP Docs API: Spring Boot application (controller + services)
-- Backend: Postgres for metadata,  object store for Binary resources
+- GP Docs API: ASP.NET Core Web API application (controller + services)
+- Backend: SQL Server for metadata, MinIO object store for Binary resources
 
 
 ## 4. Solution Strategy
 
-- Use a layered Spring Boot application with Controller -> Service -> Repository pattern.
-- Use HAPI FHIR libraries for parsing and validating FHIR R4 resources (enabled in FhirConfig.java).
-- Keep API stateless so it can scale horizontally; persist state to Postgres and object store.
+- Use a layered ASP.NET Core application with Controller -> Service -> Repository pattern.
+- Use Firely .NET SDK (Hl7.Fhir.R4) for parsing and validating FHIR R4 resources.
+- Keep API stateless so it can scale horizontally; persist state to SQL Server and object store.
 - Push logs and metrics to central observability stack (Prometheus/Grafana + ELK)
+
+## 4.1 Technology Stack
+
+This application has been built using modern .NET technologies:
+
+- **.NET 8**: Latest LTS version of .NET with improved performance and features
+- **ASP.NET Core Web API**: High-performance RESTful API framework
+- **Entity Framework Core 8**: Modern ORM for SQL Server database access
+- **Firely .NET SDK (Hl7.Fhir.R4)**: Official .NET FHIR library for R4 support and validation
+- **Serilog**: Structured logging framework
+- **Minio .NET Client**: S3-compatible object storage client
+- **RabbitMQ.Client**: Direct RabbitMQ integration for message queuing
+
+## 4.2 Building and Running
+
+### Prerequisites
+
+- .NET 8 SDK or later
+- SQL Server (2019+)
+- MinIO (object storage)
+- RabbitMQ (message broker)
+- ClamAV (virus scanning service)
+
+### Build the Application
+
+```bash
+cd src
+dotnet restore
+dotnet build
+```
+
+### Run Locally
+
+```bash
+cd src
+dotnet run
+```
+
+The API will be available at `http://localhost:8080`
+
+### Build Docker Image
+
+```bash
+docker build -t gp-practice-documents:4.1.0 .
+```
+
+### Run with Docker
+
+```bash
+docker run -p 8080:8080 \
+  -e ConnectionStrings__DefaultConnection="Server=sqlserver;Database=gp_practices;User Id=sa;Password=YourPassword;" \
+  gp-practice-documents:4.1.0
+```
+
+## 4.3 Configuration
+
+Configuration is managed through `appsettings.json`. Key settings include:
+
+- **ConnectionStrings:DefaultConnection**: SQL Server connection string
+- **DocumentProcessing:Mode**: Processing mode (SYNC, ASYNC, or HYBRID)
+- **ClamAV**: Virus scanning service configuration
+- **MinIO**: Object storage configuration
+- **RabbitMQ**: Message broker configuration
+
+See `src/appsettings.json` for full configuration options.
+
+## 4.4 API Endpoints
+
+### Submit Document Bundle
+
+```http
+POST /api/v1/gp-practice/{gpPracticeId}/documents
+Content-Type: application/fhir+json
+```
+
+**Request Body**: FHIR R4 Bundle (transaction type) containing:
+- DocumentReference
+- Binary (clinical document)
+- Patient (with verified NHS Number)
+- Encounter
+- Practitioner
+- Organization
+
+**Response**: FHIR OperationOutcome with success/error details
 
 ## 5. Building Block View
 
@@ -111,11 +195,11 @@ Important runtime scenarios are captured as sequence diagrams below.
 Generic cloud deployment:
 
 - API Gateway (managed) — TLS termination and OAuth2/OIDC authentication.
-- Kubernetes cluster (or container service) running stateless GP Docs API pods behind an autoscaling group.
-- Postgres (managed) for metadata and audit records.
-- Object storage for Binary resources.
-- Optional message broker (e.g., SNS/SQS or Kafka) for async delivery to GP systems.
-- Observability stack: Prometheus, Grafana, ELK/Cloud Logging.
+- Kubernetes cluster (or container service) running stateless GP Docs API pods (.NET 8) behind an autoscaling group.
+- SQL Server (managed) for metadata and audit records.
+- MinIO/S3 object storage for Binary resources.
+- RabbitMQ message broker for async delivery to GP systems.
+- Observability stack: Prometheus, Grafana, ELK/Cloud Logging with Serilog integration.
 
 ## 8. Crosscutting Concepts
 
@@ -136,8 +220,9 @@ Generic cloud deployment:
 ### 8.3 Scalability
 
 - Stateless API nodes behind load balancer enable horizontal scaling.
-- Postgres scaled vertically or via read replicas for read-heavy workloads.
-- Object store offloads large binary sizes and scales independently.
+- SQL Server scaled vertically or via read replicas for read-heavy workloads.
+- MinIO object store offloads large binary sizes and scales independently.
+- .NET 8 runtime provides excellent performance and memory efficiency for containerized workloads.
 
 ### 8.4 Resilience
 
@@ -158,14 +243,18 @@ Generic cloud deployment:
 
 ## 9. Architecture Decisions
 
-- Use HAPI FHIR for validation and parsing (as implemented in FhirConfig.java).
+- Use Firely .NET SDK for FHIR R4 validation and parsing.
+- Implement using ASP.NET Core 8 for modern, cross-platform deployment.
 - Keep API stateless; use cloud-managed DB and object storage.
+- Use Entity Framework Core for database access with SQL Server.
 
-### 9.1 New ADRs
+### 9.1 ADRs
 
-| ID | Impact |
-| -- | ------ |
-| ADR-001 | Use HAPI FHIR for validation and resource handling |
+| ID | Impact | Decision |
+| -- | ------ | -------- |
+| ADR-001 | High | Migrated from Java/Spring Boot to C#/.NET 8 for improved performance and modern tooling |
+| ADR-002 | High | Use Firely .NET SDK (Hl7.Fhir.R4) for FHIR validation and resource handling |
+| ADR-003 | Medium | Use Serilog for structured logging instead of traditional logging frameworks |
 
 ## 10. Quality Requirements
 
