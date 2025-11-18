@@ -1,12 +1,14 @@
-# Architecture Design Overview: GP Practice Document Submission API
+# GP Practice Document Submission API
 
 ## Document Details
 
 **Document author**: Mark Evans
 
-**Document version**: 1.0
+**Document version**: 4.1.0
 
-**Status**: Draft
+**Status**: Active
+
+**Implementation**: Python (FastAPI) - Converted from Java/Spring Boot
 
 **Approved by**: ...
 
@@ -21,6 +23,82 @@
 | Date       | Version | Author   | Revision Summary |
 | ---------- | :-----: | -------- | ---------------- |
 | 2025-10-22 |  v1.0   |  Mark Evans | Initial draft |
+| 2025-11-18 |  v4.1.0 |  System  | Converted from Java to Python using FastAPI |
+
+## Quick Start
+
+### Prerequisites
+
+- Python 3.11+
+- [uv](https://github.com/astral-sh/uv) - Fast Python package manager
+- [just](https://github.com/casey/just) - Command runner
+- MS SQL Server (or configured database)
+- MinIO (S3-compatible storage)
+- RabbitMQ
+- ClamAV (for malware scanning)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd gp-documents-api
+   ```
+
+2. Install dependencies:
+   ```bash
+   just install
+   ```
+
+3. Configure environment:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+4. Run the application:
+   ```bash
+   just run
+   ```
+
+   Or for development with auto-reload:
+   ```bash
+   just dev
+   ```
+
+### Available Commands
+
+Use `just` to see all available commands:
+
+```bash
+just --list
+```
+
+Common commands:
+- `just install` - Install dependencies
+- `just run` - Run the application
+- `just dev` - Run with auto-reload
+- `just test` - Run tests
+- `just lint` - Lint code
+- `just format` - Format code
+- `just docker-build` - Build Docker image
+- `just docker-run` - Run Docker container
+
+### API Documentation
+
+Once running, visit:
+- API docs: http://localhost:8080/docs
+- Health check: http://localhost:8080/health
+
+## Technology Stack
+
+- **Framework**: FastAPI
+- **FHIR**: fhir.resources (Python FHIR R4)
+- **Database**: SQLAlchemy with MS SQL Server
+- **Object Storage**: MinIO (Python client)
+- **Message Queue**: Pika (RabbitMQ)
+- **Validation**: Pydantic
+- **Server**: Uvicorn (ASGI)
 
 ## 1. Introduction and Goals
 
@@ -69,16 +147,17 @@ The system boundary is the GP Practice Document Submission API. It receives FHIR
 
 - External senders: Hospital EHRs, middleware
 - API Gateway: TLS termination, authentication, rate-limiting
-- GP Docs API: Spring Boot application (controller + services)
-- Backend: Postgres for metadata,  object store for Binary resources
+- GP Docs API: FastAPI application (Python) with controller + services architecture
+- Backend: MS SQL Server for metadata, MinIO (S3-compatible) for Binary resources
 
 
 ## 4. Solution Strategy
 
-- Use a layered Spring Boot application with Controller -> Service -> Repository pattern.
-- Use HAPI FHIR libraries for parsing and validating FHIR R4 resources (enabled in FhirConfig.java).
-- Keep API stateless so it can scale horizontally; persist state to Postgres and object store.
+- Use a layered FastAPI application with Router -> Service -> Repository pattern.
+- Use fhir.resources library for parsing and validating FHIR R4 resources.
+- Keep API stateless so it can scale horizontally; persist state to database and object store.
 - Push logs and metrics to central observability stack (Prometheus/Grafana + ELK)
+- Built with modern Python tooling: uv for package management, just for task running
 
 ## 5. Building Block View
 
@@ -158,14 +237,19 @@ Generic cloud deployment:
 
 ## 9. Architecture Decisions
 
-- Use HAPI FHIR for validation and parsing (as implemented in FhirConfig.java).
+- Use fhir.resources (Python) for validation and parsing of FHIR R4 resources.
 - Keep API stateless; use cloud-managed DB and object storage.
+- Migrated from Java/Spring Boot to Python/FastAPI for improved developer experience and modern tooling.
+- Use uv for fast, reliable dependency management.
+- Use just for consistent task running across development, CI/CD, and production.
 
-### 9.1 New ADRs
+### 9.1 ADRs
 
 | ID | Impact |
 | -- | ------ |
-| ADR-001 | Use HAPI FHIR for validation and resource handling |
+| ADR-001 | Use fhir.resources for validation and resource handling |
+| ADR-002 | Migrate to Python/FastAPI stack for better maintainability |
+| ADR-003 | Use uv and just for modern Python development workflow |
 
 ## 10. Quality Requirements
 
