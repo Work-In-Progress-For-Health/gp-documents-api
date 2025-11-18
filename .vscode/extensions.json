@@ -1,0 +1,30 @@
+{
+  "recommendations": [
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.csharp",
+    "ms-dotnettools.vscode-dotnet-runtime",
+    "jmrog.vscode-nuget-package-manager",
+    "ms-azuretools.vscode-docker",
+    "humao.rest-client",
+    "rangav.vscode-thunder-client",
+    "ms-mssql.mssql",
+    "ms-mssql.data-workspace-vscode",
+    "redhat.vscode-yaml",
+    "esbenp.prettier-vscode",
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+    "editorconfig.editorconfig",
+    "streetsidesoftware.code-spell-checker",
+    "aaron-bond.better-comments",
+    "redhat.vscode-xml",
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    "gruntfuggly.todo-tree",
+    "wayou.vscode-todo-highlight",
+    "oderwat.indent-rainbow",
+    "pkief.material-icon-theme",
+    "usernamehw.errorlens",
+    "github.copilot",
+    "github.copilot-chat"
+  ]
+}
