@@ -27,7 +27,7 @@ ENV/
 env/
 
 # IDEs
-.vscode/
+# Keep .vscode/ for shared DevContainer configuration
 .idea/
 *.swp
 *.swo
