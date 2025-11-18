@@ -1,0 +1,206 @@
+{
+  "name": "GP Practice Documents API - Python/FastAPI",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+
+  // Features to install
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  // Configure tool-specific properties
+  "customizations": {
+    "vscode": {
+      // VS Code extensions to install
+      "extensions": [
+        // Python Development
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "charliermarsh.ruff",
+        "ms-python.debugpy",
+
+        // API Development & Testing
+        "rangav.vscode-thunder-client",
+        "humao.rest-client",
+
+        // Database
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-mssql",
+
+        // Docker & Containers
+        "ms-azuretools.vscode-docker",
+
+        // Configuration Files
+        "tamasfe.even-better-toml",
+        "redhat.vscode-yaml",
+
+        // Just (task runner)
+        "nefrob.vscode-just-syntax",
+
+        // Git
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+
+        // Code Quality & Productivity
+        "usernamehw.errorlens",
+        "streetsidesoftware.code-spell-checker",
+        "njpwerner.autodocstring",
+        "visualstudioexptteam.vscodeintellicode",
+        "christian-kohler.path-intellisense",
+
+        // Markdown
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint",
+
+        // Environment Files
+        "mikestead.dotenv",
+
+        // JSON
+        "zainchen.json"
+      ],
+
+      // VS Code settings
+      "settings": {
+        // Python Configuration
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+        "python.terminal.activateEnvironment": true,
+        "python.analysis.typeCheckingMode": "basic",
+        "python.analysis.autoImportCompletions": true,
+        "python.analysis.inlayHints.functionReturnTypes": true,
+        "python.analysis.inlayHints.variableTypes": true,
+
+        // Formatting & Linting
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.fixAll": "explicit"
+          },
+          "editor.rulers": [120]
+        },
+
+        // Ruff Configuration
+        "ruff.lineLength": 120,
+        "ruff.lint.select": ["E", "F", "I", "N", "W"],
+        "ruff.lint.ignore": ["E501"],
+        "ruff.format.args": ["--line-length=120"],
+
+        // Testing
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestArgs": [
+          "tests"
+        ],
+
+        // File Associations
+        "files.associations": {
+          "*.toml": "toml",
+          "justfile": "just",
+          ".env*": "dotenv"
+        },
+
+        // Editor Settings
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": false,
+        "editor.rulers": [120],
+        "editor.bracketPairColorization.enabled": true,
+        "editor.guides.bracketPairs": true,
+        "editor.inlineSuggest.enabled": true,
+        "editor.suggestSelection": "first",
+
+        // Files to exclude from explorer
+        "files.exclude": {
+          "**/__pycache__": true,
+          "**/*.pyc": true,
+          "**/.pytest_cache": true,
+          "**/.ruff_cache": true,
+          "**/node_modules": true,
+          "**/.venv": false
+        },
+
+        // Search exclusions
+        "search.exclude": {
+          "**/__pycache__": true,
+          "**/*.pyc": true,
+          "**/.pytest_cache": true,
+          "**/.ruff_cache": true,
+          "**/node_modules": true,
+          "**/.venv": true,
+          "**/uv.lock": true
+        },
+
+        // Terminal
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          }
+        },
+
+        // Git
+        "git.autofetch": true,
+        "git.confirmSync": false,
+        "git.enableSmartCommit": true,
+
+        // Error Lens
+        "errorLens.enabledDiagnosticLevels": [
+          "error",
+          "warning",
+          "info"
+        ],
+
+        // Auto Docstring
+        "autoDocstring.docstringFormat": "google",
+        "autoDocstring.startOnNewLine": false,
+
+        // IntelliCode
+        "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+
+        // SQLTools
+        "sqltools.useNodeRuntime": true,
+
+        // JSON
+        "json.schemas": [],
+
+        // YAML
+        "yaml.schemas": {
+          "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.yml"
+        }
+      }
+    }
+  },
+
+  // Set up port forwarding for the API
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "FastAPI Application",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // Use 'postCreateCommand' to run commands after the container is created
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  // Comment out to connect as root instead
+  "remoteUser": "vscode",
+
+  // Mount the workspace folder
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
+
+  // Environment variables
+  "remoteEnv": {
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+
+  // Mounts for Docker socket and cache
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ]
+}
