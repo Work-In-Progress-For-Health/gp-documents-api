@@ -37,11 +37,15 @@ spec:
     - authentication-api
     - audit-logging-api
     - fhir-validation-api
+    - wccg-api
+    - clinical-documents-api
   
   # Component dependencies
   dependsOn:
     - component:default/authentication-service
     - component:default/audit-service
+    - component:default/wccg-service
+    - component:default/clinical-documents-service
     - resource:default/gp-documents-database
     - resource:default/gp-documents-cache
     - resource:default/document-storage
@@ -129,6 +133,40 @@ spec:
 
 ---
 apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: wccg-api
+  title: WCCG API
+  description: Wales Clinical Communications Gateway API for healthcare interoperability
+  tags:
+    - healthcare
+    - wales
+    - interoperability
+spec:
+  type: openapi
+  lifecycle: production
+  owner: integration-team
+  system: wccg
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: clinical-documents-api
+  title: Clinical Documents API
+  description: API for accessing and managing clinical document repositories
+  tags:
+    - healthcare
+    - documents
+    - clinical
+spec:
+  type: openapi
+  lifecycle: production
+  owner: clinical-systems-team
+  system: clinical-documents
+
+---
+apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: authentication-service
@@ -152,6 +190,32 @@ spec:
   lifecycle: production
   owner: compliance-team
   system: audit
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: wccg-service
+  title: WCCG Service
+  description: Service implementing the Wales Clinical Communications Gateway
+spec:
+  type: service
+  lifecycle: production
+  owner: integration-team
+  system: wccg
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: clinical-documents-service
+  title: Clinical Documents Service
+  description: Service managing clinical document repositories
+spec:
+  type: service
+  lifecycle: production
+  owner: clinical-systems-team
+  system: clinical-documents
 
 ---
 apiVersion: backstage.io/v1alpha1
