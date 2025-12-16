@@ -2,7 +2,16 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: gp-documents-api
+  title: GP Documents API
+  description: |
+    Backend service that implements the GP Documents API, enabling the secure
+    exchange of clinical documents between GP practices and other healthcare systems.
+  tags:
+    - healthcare
+    - fhir
+    - documents
 spec:
   type: service
   lifecycle: production
   owner: platform-team
+  system: gp-documents
