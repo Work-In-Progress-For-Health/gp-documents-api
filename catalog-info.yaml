@@ -15,6 +15,6 @@ spec:
   lifecycle: production
   owner: platform-team
   system: gp-documents
-dependsOn:
+  dependsOn:
     - resource:default/postgres
     - component:default/kong-gateway
