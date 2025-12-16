@@ -1,7 +1,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: GP Documents API
+  name: gp-documents-api
   description: GP Documents API
   tags:
     - springboot
