@@ -51,6 +51,7 @@ spec:
     - resource:default/document-storage
 
 ---
+# API PROVIDED by this component
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
@@ -61,6 +62,11 @@ metadata:
     - healthcare
     - fhir
     - rest
+    - documents
+  links:
+    - url: https://api.your-domain.com/gp-documents/docs
+      title: OpenAPI Specification
+      icon: docs
 spec:
   type: openapi
   lifecycle: production
@@ -76,12 +82,26 @@ spec:
       /documents:
         get:
           summary: List documents
+          description: Retrieve a list of clinical documents
           responses:
             '200':
               description: Successful response
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      type: object
+        post:
+          summary: Create a new document
+          description: Upload a new clinical document
+          responses:
+            '201':
+              description: Document created
       /documents/{id}:
         get:
           summary: Get document by ID
+          description: Retrieve a specific clinical document
           parameters:
             - name: id
               in: path
@@ -91,139 +111,372 @@ spec:
           responses:
             '200':
               description: Successful response
+            '404':
+              description: Document not found
 
 ---
+# CONSUMED API: Authentication
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: authentication-api
   title: Authentication API
-  description: API for authentication and authorization services
+  description: API for authentication and authorization services including OAuth2 and JWT token management
+  tags:
+    - security
+    - authentication
+    - oauth2
+  links:
+    - url: https://api.your-domain.com/auth/docs
+      title: API Documentation
+      icon: docs
 spec:
   type: openapi
   lifecycle: production
   owner: security-team
   system: authentication
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Authentication API
+      version: 1.0.0
+      description: Provides authentication and authorization services
+    paths:
+      /auth/token:
+        post:
+          summary: Get access token
+          responses:
+            '200':
+              description: Token issued
+      /auth/validate:
+        post:
+          summary: Validate token
+          responses:
+            '200':
+              description: Token is valid
 
 ---
+# CONSUMED API: Audit Logging
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: audit-logging-api
   title: Audit Logging API
-  description: API for recording audit events and compliance logging
+  description: API for recording audit events and compliance logging for healthcare data access
+  tags:
+    - compliance
+    - audit
+    - logging
+    - security
+  links:
+    - url: https://api.your-domain.com/audit/docs
+      title: API Documentation
+      icon: docs
 spec:
   type: openapi
   lifecycle: production
   owner: compliance-team
   system: audit
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Audit Logging API
+      version: 1.0.0
+      description: Records audit events for compliance
+    paths:
+      /audit/events:
+        post:
+          summary: Log audit event
+          description: Record a new audit event
+          responses:
+            '201':
+              description: Event logged
+      /audit/events/{id}:
+        get:
+          summary: Get audit event
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: string
+          responses:
+            '200':
+              description: Event retrieved
 
 ---
+# CONSUMED API: FHIR Validation
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: fhir-validation-api
   title: FHIR Validation API
-  description: API for validating FHIR resources against profiles
+  description: API for validating FHIR resources against UK Core and other FHIR profiles
+  tags:
+    - healthcare
+    - fhir
+    - validation
+    - interoperability
+  links:
+    - url: https://api.your-domain.com/fhir-validation/docs
+      title: API Documentation
+      icon: docs
 spec:
   type: openapi
   lifecycle: production
   owner: platform-team
   system: fhir-validation
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: FHIR Validation API
+      version: 1.0.0
+      description: Validates FHIR resources against profiles
+    paths:
+      /validate:
+        post:
+          summary: Validate FHIR resource
+          description: Validate a FHIR resource against specified profiles
+          responses:
+            '200':
+              description: Validation result
+      /profiles:
+        get:
+          summary: List available profiles
+          responses:
+            '200':
+              description: List of profiles
 
 ---
+# CONSUMED API: WCCG
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: wccg-api
   title: WCCG API
-  description: Wales Clinical Communications Gateway API for healthcare interoperability
+  description: Wales Clinical Communications Gateway API for healthcare interoperability and secure messaging across Welsh health systems
   tags:
     - healthcare
     - wales
     - interoperability
+    - messaging
+    - nhs
+  links:
+    - url: https://api.your-domain.com/wccg/docs
+      title: API Documentation
+      icon: docs
 spec:
   type: openapi
   lifecycle: production
   owner: integration-team
   system: wccg
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: WCCG API
+      version: 1.0.0
+      description: Wales Clinical Communications Gateway API
+    paths:
+      /messages:
+        post:
+          summary: Send message
+          description: Send a clinical message via WCCG
+          responses:
+            '201':
+              description: Message sent
+        get:
+          summary: List messages
+          responses:
+            '200':
+              description: Message list
+      /messages/{id}:
+        get:
+          summary: Get message
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: string
+          responses:
+            '200':
+              description: Message retrieved
 
 ---
+# CONSUMED API: Clinical Documents
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: clinical-documents-api
   title: Clinical Documents API
-  description: API for accessing and managing clinical document repositories
+  description: API for accessing and managing clinical document repositories including discharge summaries, referrals, and clinical correspondence
   tags:
     - healthcare
     - documents
     - clinical
+    - repository
+  links:
+    - url: https://api.your-domain.com/clinical-documents/docs
+      title: API Documentation
+      icon: docs
 spec:
   type: openapi
   lifecycle: production
   owner: clinical-systems-team
   system: clinical-documents
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Clinical Documents API
+      version: 1.0.0
+      description: Access and manage clinical document repositories
+    paths:
+      /repositories:
+        get:
+          summary: List document repositories
+          responses:
+            '200':
+              description: Repository list
+      /repositories/{repoId}/documents:
+        get:
+          summary: List documents in repository
+          parameters:
+            - name: repoId
+              in: path
+              required: true
+              schema:
+                type: string
+          responses:
+            '200':
+              description: Document list
+      /repositories/{repoId}/documents/{docId}:
+        get:
+          summary: Retrieve document
+          parameters:
+            - name: repoId
+              in: path
+              required: true
+              schema:
+                type: string
+            - name: docId
+              in: path
+              required: true
+              schema:
+                type: string
+          responses:
+            '200':
+              description: Document retrieved
 
 ---
+# Supporting Service: Authentication
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: authentication-service
   title: Authentication Service
-  description: Service providing authentication and authorization
+  description: Service providing authentication and authorization using OAuth2 and JWT
+  tags:
+    - security
+    - authentication
 spec:
   type: service
   lifecycle: production
   owner: security-team
   system: authentication
+  providesApis:
+    - authentication-api
 
 ---
+# Supporting Service: Audit
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: audit-service
   title: Audit Service
-  description: Service for audit logging and compliance
+  description: Service for audit logging and compliance with healthcare regulations
+  tags:
+    - compliance
+    - audit
 spec:
   type: service
   lifecycle: production
   owner: compliance-team
   system: audit
+  providesApis:
+    - audit-logging-api
 
 ---
+# Supporting Service: WCCG
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: wccg-service
   title: WCCG Service
-  description: Service implementing the Wales Clinical Communications Gateway
+  description: Service implementing the Wales Clinical Communications Gateway for NHS Wales
+  tags:
+    - healthcare
+    - wales
+    - nhs
 spec:
   type: service
   lifecycle: production
   owner: integration-team
   system: wccg
+  providesApis:
+    - wccg-api
 
 ---
+# Supporting Service: Clinical Documents
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: clinical-documents-service
   title: Clinical Documents Service
-  description: Service managing clinical document repositories
+  description: Service managing clinical document repositories and document lifecycle
+  tags:
+    - healthcare
+    - documents
 spec:
   type: service
   lifecycle: production
   owner: clinical-systems-team
   system: clinical-documents
+  providesApis:
+    - clinical-documents-api
 
 ---
+# Supporting Service: FHIR Validation (Added this one as it was referenced but missing)
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: fhir-validation-service
+  title: FHIR Validation Service
+  description: Service for validating FHIR resources against profiles
+  tags:
+    - healthcare
+    - fhir
+    - validation
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: fhir-validation
+  providesApis:
+    - fhir-validation-api
+  dependsOn:
+    - resource:default/fhir-profiles-storage
+
+---
+# Resource: Database
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
   name: gp-documents-database
   title: GP Documents Database
-  description: PostgreSQL database for storing document metadata
+  description: PostgreSQL database for storing document metadata, indices, and relationships
+  tags:
+    - database
+    - postgresql
 spec:
   type: database
   lifecycle: production
@@ -231,12 +484,16 @@ spec:
   system: gp-documents
 
 ---
+# Resource: Cache
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
   name: gp-documents-cache
   title: GP Documents Cache
-  description: Redis cache for API response caching
+  description: Redis cache for API response caching and session management
+  tags:
+    - cache
+    - redis
 spec:
   type: cache
   lifecycle: production
@@ -244,14 +501,35 @@ spec:
   system: gp-documents
 
 ---
+# Resource: Storage
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
   name: document-storage
   title: Document Storage
-  description: S3-compatible object storage for clinical documents
+  description: S3-compatible object storage for encrypted clinical documents with versioning
+  tags:
+    - storage
+    - s3
 spec:
   type: storage
   lifecycle: production
   owner: platform-team
   system: gp-documents
+
+---
+# Resource: FHIR Profiles Storage (Added for FHIR validation service)
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: fhir-profiles-storage
+  title: FHIR Profiles Storage
+  description: Storage for FHIR profile definitions and validation rules
+  tags:
+    - storage
+    - fhir
+spec:
+  type: storage
+  lifecycle: production
+  owner: platform-team
+  system: fhir-validation
