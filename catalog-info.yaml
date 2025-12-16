@@ -6,13 +6,188 @@ metadata:
   description: |
     Backend service that implements the GP Documents API, enabling the secure
     exchange of clinical documents between GP practices and other healthcare systems.
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: your-org/gp-documents-api
+    backstage.io/source-location: url:https://github.com/your-org/gp-documents-api
   tags:
     - healthcare
     - fhir
     - documents
+    - api
+  links:
+    - url: https://api.your-domain.com/gp-documents/docs
+      title: API Documentation
+      icon: docs
+    - url: https://grafana.your-domain.com/d/gp-documents
+      title: Monitoring Dashboard
+      icon: dashboard
 spec:
   type: service
   lifecycle: production
   owner: platform-team
   system: gp-documents
+  
+  # APIs provided by this component
+  providesApis:
+    - gp-documents-api
+  
+  # APIs consumed by this component
+  consumesApis:
+    - authentication-api
+    - audit-logging-api
+    - fhir-validation-api
+  
+  # Component dependencies
+  dependsOn:
+    - component:default/authentication-service
+    - component:default/audit-service
+    - resource:default/gp-documents-database
+    - resource:default/gp-documents-cache
+    - resource:default/document-storage
 
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: gp-documents-api
+  title: GP Documents API
+  description: RESTful API for managing and exchanging clinical documents in GP practices
+  tags:
+    - healthcare
+    - fhir
+    - rest
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  system: gp-documents
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: GP Documents API
+      version: 1.0.0
+      description: API for secure document exchange between GP practices
+    paths:
+      /documents:
+        get:
+          summary: List documents
+          responses:
+            '200':
+              description: Successful response
+      /documents/{id}:
+        get:
+          summary: Get document by ID
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: string
+          responses:
+            '200':
+              description: Successful response
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: authentication-api
+  title: Authentication API
+  description: API for authentication and authorization services
+spec:
+  type: openapi
+  lifecycle: production
+  owner: security-team
+  system: authentication
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: audit-logging-api
+  title: Audit Logging API
+  description: API for recording audit events and compliance logging
+spec:
+  type: openapi
+  lifecycle: production
+  owner: compliance-team
+  system: audit
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: fhir-validation-api
+  title: FHIR Validation API
+  description: API for validating FHIR resources against profiles
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  system: fhir-validation
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: authentication-service
+  title: Authentication Service
+  description: Service providing authentication and authorization
+spec:
+  type: service
+  lifecycle: production
+  owner: security-team
+  system: authentication
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: audit-service
+  title: Audit Service
+  description: Service for audit logging and compliance
+spec:
+  type: service
+  lifecycle: production
+  owner: compliance-team
+  system: audit
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: gp-documents-database
+  title: GP Documents Database
+  description: PostgreSQL database for storing document metadata
+spec:
+  type: database
+  lifecycle: production
+  owner: platform-team
+  system: gp-documents
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: gp-documents-cache
+  title: GP Documents Cache
+  description: Redis cache for API response caching
+spec:
+  type: cache
+  lifecycle: production
+  owner: platform-team
+  system: gp-documents
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: document-storage
+  title: Document Storage
+  description: S3-compatible object storage for clinical documents
+spec:
+  type: storage
+  lifecycle: production
+  owner: platform-team
+  system: gp-documents
