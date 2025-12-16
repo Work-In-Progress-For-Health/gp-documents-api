@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: GP Documents API
+  description: GP Documents API
+  tags:
+    - springboot
+    - k8s
+    - api
+spec:
+  type: service
+  lifecycle: experimental
+  owner: platform-team
