@@ -1,13 +1,15 @@
+---
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: gp-documents-api
-  description: GP Documents API
-  tags:
-    - springboot
-    - k8s
-    - api
+  description: |
+    Backend service that implements GP Documents API, allows clinical documents
+    to be exchanged between healthcare systems.
+  labels:
+    system: gp
+    lifecycle: production
+    example.com/service-discovery-name: gp-docs-api
+  annotations:
 spec:
   type: service
-  lifecycle: experimental
-  owner: platform-team
