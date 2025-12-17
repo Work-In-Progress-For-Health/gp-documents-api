@@ -8,7 +8,6 @@ metadata:
     exchange of clinical documents between GP practices and other healthcare systems.
   annotations:
     backstage.io/techdocs-ref: dir:.
-    github.com/project-slug: Work-In-Progress-For-Health/gp-documents-api
     backstage.io/source-location: url:https://github.com/Work-In-Progress-For-Health/gp-documents-api
   tags:
     - healthcare
