@@ -7,8 +7,7 @@ metadata:
     Backend service that implements the GP Documents API, enabling the secure
     exchange of clinical documents between GP practices and other healthcare systems.
   annotations:
-    backstage.io/techdocs-ref: dir:.
-    backstage.io/source-location: url:https://github.com/Work-In-Progress-For-Health/gp-documents-api
+    backstage.io/techdocs-ref: github:https://github.com/Work-In-Progress-For-Health/gp-documents-api
   tags:
     - healthcare
     - fhir
