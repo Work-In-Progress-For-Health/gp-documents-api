@@ -1,0 +1,194 @@
+{
+  "name": "GP Practice Documents API (.NET 8)",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+
+  // Configure tool-specific properties
+  "customizations": {
+    "vscode": {
+      // Extensions to install in the container
+      "extensions": [
+        // .NET Development
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.vscode-dotnet-runtime",
+
+        // NuGet Package Management
+        "jmrog.vscode-nuget-package-manager",
+
+        // Docker
+        "ms-azuretools.vscode-docker",
+
+        // API Testing
+        "humao.rest-client",
+        "rangav.vscode-thunder-client",
+
+        // Database
+        "ms-mssql.mssql",
+        "ms-mssql.data-workspace-vscode",
+
+        // YAML/JSON
+        "redhat.vscode-yaml",
+        "esbenp.prettier-vscode",
+
+        // Git
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+
+        // Code Quality
+        "editorconfig.editorconfig",
+        "streetsidesoftware.code-spell-checker",
+        "aaron-bond.better-comments",
+
+        // XML Support (for .csproj files)
+        "redhat.vscode-xml",
+
+        // Markdown
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint",
+
+        // General Productivity
+        "gruntfuggly.todo-tree",
+        "wayou.vscode-todo-highlight",
+        "oderwat.indent-rainbow",
+        "pkief.material-icon-theme",
+
+        // Error Lens
+        "usernamehw.errorlens",
+
+        // GitHub Copilot (if available)
+        "github.copilot",
+        "github.copilot-chat"
+      ],
+
+      // Settings for the workspace
+      "settings": {
+        // .NET Settings
+        "dotnet.defaultSolution": "src/GpPracticeDocuments.csproj",
+        "omnisharp.enableEditorConfigSupport": true,
+        "omnisharp.enableRoslynAnalyzers": true,
+        "csharp.semanticHighlighting.enabled": true,
+
+        // Editor Settings
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll": "explicit",
+          "source.organizeImports": "explicit"
+        },
+        "editor.rulers": [120],
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true,
+
+        // File Settings
+        "files.exclude": {
+          "**/bin": true,
+          "**/obj": true,
+          "**/.vs": true
+        },
+        "files.watcherExclude": {
+          "**/bin/**": true,
+          "**/obj/**": true,
+          "**/.vs/**": true
+        },
+        "files.trimTrailingWhitespace": true,
+        "files.insertFinalNewline": true,
+
+        // C# Formatting
+        "[csharp]": {
+          "editor.defaultFormatter": "ms-dotnettools.csharp",
+          "editor.tabSize": 4
+        },
+
+        // JSON Formatting
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.tabSize": 2
+        },
+
+        // YAML Formatting
+        "[yaml]": {
+          "editor.defaultFormatter": "redhat.vscode-yaml",
+          "editor.tabSize": 2
+        },
+
+        // Terminal
+        "terminal.integrated.defaultProfile.linux": "bash",
+
+        // Git
+        "git.autofetch": true,
+        "git.confirmSync": false,
+
+        // SQL Server
+        "mssql.connections": [
+          {
+            "server": "sqlserver",
+            "database": "gp_practices",
+            "authenticationType": "SqlLogin",
+            "user": "sa",
+            "password": "",
+            "emptyPasswordInput": false,
+            "savePassword": false,
+            "profileName": "GP Practices DB"
+          }
+        ]
+      }
+    }
+  },
+
+  // Features to add to the dev container
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  // Forward ports from the container to the host
+  "forwardPorts": [
+    8080,    // API
+    1433,    // SQL Server
+    5672,    // RabbitMQ
+    15672,   // RabbitMQ Management UI
+    9000,    // MinIO
+    9001,    // MinIO Console
+    3310     // ClamAV
+  ],
+
+  // Port attributes
+  "portsAttributes": {
+    "8080": {
+      "label": "GP Docs API",
+      "onAutoForward": "notify"
+    },
+    "1433": {
+      "label": "SQL Server"
+    },
+    "5672": {
+      "label": "RabbitMQ"
+    },
+    "15672": {
+      "label": "RabbitMQ Management"
+    },
+    "9000": {
+      "label": "MinIO API"
+    },
+    "9001": {
+      "label": "MinIO Console"
+    }
+  },
+
+  // Use 'postCreateCommand' to run commands after the container is created
+  "postCreateCommand": "cd src && dotnet restore && dotnet build",
+
+  // Use 'postStartCommand' to run commands after the container starts
+  "postStartCommand": "echo 'GP Practice Documents API Dev Container Ready! Run: cd src && dotnet run'",
+
+  // Set environment variables
+  "remoteEnv": {
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1"
+  },
+
+  // Uncomment to connect as a non-root user
+  "remoteUser": "vscode"
+}
